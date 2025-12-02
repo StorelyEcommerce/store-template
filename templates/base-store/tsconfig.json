@@ -1,7 +1,38 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true
+    },
+    "exclude": [
+        "apps/admin",
+        "apps/storefront",
+        "node_modules"
+    ],
+    "references": [
+        {
+            "path": "./packages/shared-types"
+        },
+        {
+            "path": "./packages/shared-config"
+        },
+        {
+            "path": "./packages/shared-utils"
+        },
+        {
+            "path": "./packages/ui"
+        },
+        {
+            "path": "./apps/edge-api"
+        }
+    ]
 }
+

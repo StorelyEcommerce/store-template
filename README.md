@@ -9,24 +9,22 @@ store-template/
 ├── deploy_templates.sh      # Deployment script for R2
 ├── template_catalog.json    # Template catalog metadata
 ├── templates/               # Template source directories
-│   └── base-store/          # Base ecommerce template
-│       ├── package.json
-│       ├── index.html
-│       ├── vite.config.ts
-│       ├── tsconfig.json
-│       ├── tailwind.config.js
+│   └── base-store/          # Full-stack ecommerce template
+│       ├── package.json     # Root workspace package.json
 │       ├── .donttouch_files.json
 │       ├── .redacted_files.json
 │       ├── .important_files.json
-│       ├── public/
-│       └── src/
-│           ├── App.tsx
-│           ├── main.tsx
-│           ├── index.css
-│           ├── api/
-│           ├── components/
-│           ├── context/
-│           └── pages/
+│       ├── apps/
+│       │   ├── storefront/  # Customer-facing React app
+│       │   ├── admin/       # Admin dashboard React app
+│       │   └── edge-api/    # Cloudflare Workers API
+│       ├── packages/
+│       │   ├── shared-config/
+│       │   ├── shared-types/
+│       │   ├── shared-utils/
+│       │   └── ui/
+│       └── infra/
+│           └── db/          # D1 database schema & seeds
 └── zips/                    # Generated zip files
 ```
 
@@ -34,19 +32,47 @@ store-template/
 
 ### base-store
 
-A comprehensive ecommerce store template with:
+A comprehensive full-stack ecommerce template with:
 
-- **Product catalog** with grid views and search
-- **Shopping cart** with local storage persistence
-- **Checkout flow** with Stripe integration hooks
-- **Responsive design** for all devices
-- **Beautiful UI** with warm cream palette and terracotta accents
+**Storefront (Customer-Facing):**
+- Product catalog with grid views and search
+- Shopping cart with local storage persistence
+- Checkout flow with Stripe integration hooks
+- Beautiful UI with warm cream palette and terracotta accents
+- Responsive design for all devices
+
+**Admin Dashboard:**
+- Dashboard with key metrics and statistics
+- Product management (CRUD operations)
+- Order management and tracking
+- Payment monitoring
+- Responsive sidebar navigation
+- Dark theme design
+
+**Edge API (Cloudflare Workers):**
+- RESTful API built with Hono
+- Store resolution middleware
+- Authentication middleware
+- Product, order, and webhook routes
+- D1 database integration
+
+**Shared Packages:**
+- `shared-config` - Shared configuration
+- `shared-types` - TypeScript interfaces and types
+- `shared-utils` - API client, formatters
+- `ui` - Reusable React components
+
+**Infrastructure:**
+- D1 database schema (`infra/db/schema.sql`)
+- Sample seed data (`infra/db/seed.sql`)
 
 **Tech Stack:**
 - React 18+ with TypeScript
 - Vite for build tooling
 - Tailwind CSS for styling
 - React Router for navigation
+- Hono for API routing
+- Cloudflare Workers & D1
 - Lucide React for icons
 
 ## Deployment
@@ -97,11 +123,26 @@ The script will:
 
 ## Local Development
 
-To work on a template locally:
+To work on the base-store template locally:
 
 ```bash
 cd templates/base-store
 npm install
+
+# Initialize and seed database
+npm run db:init
+npm run db:seed
+
+# Run edge API (port 8787)
+npm run dev:api
+
+# Run storefront (port 5173)
+npm run dev:storefront
+
+# Run admin dashboard (port 5174)
+npm run dev:admin
+
+# Run all apps
 npm run dev
 ```
 
