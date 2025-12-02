@@ -1,0 +1,17 @@
+[
+  "src/App.tsx",
+  "src/main.tsx",
+  "src/index.css",
+  "src/api/client.ts",
+  "src/context/CartContext.tsx",
+  "src/components/Header.tsx",
+  "src/components/Footer.tsx",
+  "src/components/ProductCard.tsx",
+  "src/pages/HomePage.tsx",
+  "src/pages/ProductsPage.tsx",
+  "src/pages/ProductDetailPage.tsx",
+  "src/pages/CartPage.tsx",
+  "src/pages/SuccessPage.tsx",
+  "index.html"
+]
+

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "base-store",
+    "language": "typescript",
+    "frameworks": ["react", "vite", "tailwindcss", "react-router"],
+    "description": {
+      "selection": "A comprehensive base ecommerce store template with product catalog, shopping cart, checkout flow, and responsive design. Perfect for building any type of online store - fashion, electronics, general retail, or specialized ecommerce applications. Features a warm cream aesthetic with terracotta accents, local cart persistence, product search, and beautiful animations. Built with React 18, TypeScript, Vite, and Tailwind CSS.",
+      "usage": "This is the base ecommerce store template. It provides a complete foundation for building online stores with:\n\n**Core Features:**\n- Product catalog with grid/list views\n- Shopping cart with local storage persistence\n- Product search functionality\n- Product detail pages with add-to-cart\n- Checkout process with Stripe integration hooks\n- Success/confirmation page\n- Responsive design for all devices\n- Beautiful animations and micro-interactions\n\n**Tech Stack:**\n- React 18+ with TypeScript\n- Vite for build tooling\n- Tailwind CSS for styling\n- React Router for navigation\n- Lucide React for icons\n- Local Storage for cart state\n\n**Design System:**\n- Warm cream color palette (#faf8f5 base)\n- Terracotta accent colors (#d95f3d primary)\n- Fraunces serif for headings\n- Source Sans 3 for body text\n- Smooth animations and hover effects\n\n**DO NOT TOUCH FILES:**\n- package.json\n- vite.config.ts\n- tsconfig.json\n- tsconfig.app.json\n- tsconfig.node.json\n- tailwind.config.js\n- postcss.config.cjs\n- eslint.config.js\n\n**Template Structure:**\n- src/components/ - Reusable UI components (Header, Footer, ProductCard)\n- src/pages/ - Page components (Home, Products, ProductDetail, Cart, Success)\n- src/context/ - React Context providers (CartContext)\n- src/api/ - API client and types\n- public/ - Static assets\n\n**API Integration:**\nThe template uses an API client in src/api/client.ts that connects to:\n- VITE_API_URL environment variable (default: http://localhost:8787)\n- VITE_STORE_SLUG environment variable (default: demo-store)\n\nCustomize this template for your specific ecommerce needs. The base structure supports any product type and can be extended with additional features like user authentication, wishlists, reviews, and more."
+    }
+  }
+]
+
