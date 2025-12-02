@@ -2,8 +2,7 @@ import { Hono } from 'hono';
 import { resolveStore } from '../middleware/store-resolver';
 import { Stripe } from 'stripe';
 import { HTTPException } from 'hono/http-exception';
-import { Store, Product } from '@store/shared-types';
-import { HonoEnv } from '../types';
+import { Store, Product, HonoEnv, ShippingAddress } from '../types';
 
 const app = new Hono<HonoEnv>();
 
@@ -77,16 +76,6 @@ app.get('/:slug/products/:idOrSlug', async (c) => {
 
     return c.json(productWithSlug);
 });
-
-interface ShippingAddress {
-    name: string;
-    line1: string;
-    line2?: string;
-    city: string;
-    state?: string;
-    postalCode: string;
-    country: string;
-}
 
 app.post('/:slug/checkout', async (c) => {
     const store = c.get('store') as Store;

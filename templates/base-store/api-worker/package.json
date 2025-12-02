@@ -9,9 +9,6 @@
     },
     "dependencies": {
         "hono": "^3.0.0",
-        "@store/shared-types": "*",
-        "@store/shared-config": "*",
-        "@store/shared-utils": "*",
         "stripe": "^14.0.0"
     },
     "devDependencies": {

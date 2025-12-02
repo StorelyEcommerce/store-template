@@ -1,7 +1,6 @@
 import { Context, Next } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { HonoEnv } from '../types';
-import { Store } from '@store/shared-types';
+import { HonoEnv, Store } from '../types';
 
 export async function resolveStore(c: Context<HonoEnv>, next: Next) {
     const slug = c.req.param('slug');

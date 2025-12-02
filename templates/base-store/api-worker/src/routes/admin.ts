@@ -1,9 +1,7 @@
 import { Hono } from 'hono';
 import { adminAuth } from '../middleware/auth';
 import { HTTPException } from 'hono/http-exception';
-import { Store, StoreThemeConfig, Product, Order } from '@store/shared-types';
-import { DEFAULT_THEME } from '@store/shared-config';
-import { HonoEnv } from '../types';
+import { Store, StoreThemeConfig, Product, Order, DEFAULT_THEME, HonoEnv } from '../types';
 
 const app = new Hono<HonoEnv>();
 
