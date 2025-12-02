@@ -1,0 +1,13 @@
+name = "edge-api"
+main = "src/index.ts"
+compatibility_date = "2023-10-30"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "store-platform-db"
+database_id = "xxxx-xxxx-xxxx-xxxx" # Placeholder
+
+[vars]
+STRIPE_SECRET_KEY = "sk_test_..."
+STRIPE_WEBHOOK_SECRET = "whsec_..."
+ADMIN_API_KEY = "admin-secret-key"

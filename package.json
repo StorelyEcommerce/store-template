@@ -1,0 +1,20 @@
+{
+  "name": "store-platform-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "tsc -b && npm run build --workspaces --if-present",
+    "build:packages": "tsc -b",
+    "build:apps": "npm run build -w apps/storefront && npm run build -w apps/admin && npm run build -w apps/edge-api",
+    "test": "npm run test --workspaces"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "typescript": "^5.0.0"
+  }
+}
