@@ -107,19 +107,24 @@ Cloudflare Workers API built with Hono.
 # Install dependencies
 npm install
 
-# Start storefront (main app)
+# Start ALL services (storefront, admin, API) concurrently
 npm run dev
 
-# Start admin dashboard (separate terminal)
-npm run dev:admin
-
-# Start API worker (separate terminal)
-npm run dev:api
+# Or start services individually:
+npm run dev:storefront  # Storefront on port 5173
+npm run dev:admin       # Admin dashboard on port 5174
+npm run dev:api         # API worker on port 8787
 
 # Initialize database
 npm run db:init
 npm run db:seed
 ```
+
+## Ports
+
+- **Storefront**: Port 5173 (or PORT env var)
+- **Admin Dashboard**: Port 5174
+- **Edge API**: Port 8787
 
 ## Environment Variables
 

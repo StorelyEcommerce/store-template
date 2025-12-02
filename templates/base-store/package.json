@@ -4,14 +4,16 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview --host 0.0.0.0",
+    "dev": "concurrently -n storefront,admin,api -c blue,green,yellow \"vite --host 0.0.0.0\" \"cd admin-app && vite --host 0.0.0.0 --port 5174\" \"cd api-worker && wrangler dev --config wrangler.toml --port 8787\"",
+    "dev:storefront": "vite --host 0.0.0.0",
     "dev:admin": "cd admin-app && vite --host 0.0.0.0 --port 5174",
-    "dev:api": "cd api-worker && wrangler dev --port 8787",
+    "dev:api": "cd api-worker && wrangler dev --config wrangler.toml --port 8787",
+    "build": "npm run build:storefront && npm run build:admin && npm run build:api",
+    "build:storefront": "tsc -b && vite build",
     "build:admin": "cd admin-app && tsc -b && vite build",
     "build:api": "cd api-worker && tsc",
+    "lint": "eslint .",
+    "preview": "vite preview --host 0.0.0.0",
     "db:init": "cd api-worker && wrangler d1 execute store-platform-db --local --file=../infra/db/schema.sql",
     "db:seed": "cd api-worker && wrangler d1 execute store-platform-db --local --file=../infra/db/seed.sql"
   },
@@ -29,6 +31,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
@@ -40,4 +43,3 @@
     "vite": "^7.2.4"
   }
 }
-
