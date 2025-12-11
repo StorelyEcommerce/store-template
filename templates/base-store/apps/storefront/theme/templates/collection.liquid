@@ -1,0 +1,119 @@
+{% comment %}Collection template{% endcomment %}
+{% assign page_title = 'Products' %}
+{% assign search_query = request.params.search | default: '' %}
+
+<div style="min-height: 100vh; padding-top: 5rem;">
+  <!-- Header -->
+  <div style="background: #f5f1eb; border-bottom: 1px solid #e8e2d9;">
+    <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1rem;">
+      <h1 style="font-size: 2rem; font-family: 'Fraunces', Georgia, serif; color: #2d2924; font-weight: 500;">
+        {% if search_query != blank %}
+          Search: "{{ search_query }}"
+        {% else %}
+          All Products
+        {% endif %}
+      </h1>
+      <p style="margin-top: 0.5rem; color: #4a443d;">
+        <span id="product-count">{{ products.size }}</span> product{% if products.size != 1 %}s{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1rem;">
+    <!-- Filters Bar -->
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; align-items: center;">
+      <!-- Search -->
+      <form action="/products" method="get" style="flex: 1; min-width: 200px; position: relative;">
+        <svg style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.25rem; height: 1.25rem; color: #6b635a;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          name="search"
+          placeholder="Search products..."
+          value="{{ search_query }}"
+          class="input"
+          style="padding-left: 3rem; padding-right: 2.5rem;"
+        />
+        {% if search_query != blank %}
+          <a href="/products" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6b635a; cursor: pointer;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </a>
+        {% endif %}
+      </form>
+
+      <!-- Sort -->
+      <select id="sort-select" onchange="sortProducts(this.value)" class="input" style="width: auto;">
+        <option value="newest">Newest First</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="name">Name: A-Z</option>
+      </select>
+    </div>
+
+    <!-- Products Grid -->
+    <div id="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+      {% if products.size > 0 %}
+        {% for product in products %}
+          {% render 'product-card', product: product %}
+        {% endfor %}
+      {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 5rem 0;">
+          <div style="width: 5rem; height: 5rem; margin: 0 auto; background: #f5f1eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9a9285" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </div>
+          <h2 style="font-size: 1.25rem; font-weight: 500; color: #2d2924;">No products found</h2>
+          <p style="margin-top: 0.5rem; color: #4a443d;">
+            {% if search_query != blank %}
+              No products match "{{ search_query }}"
+            {% else %}
+              Check back soon for new arrivals
+            {% endif %}
+          </p>
+          {% if search_query != blank %}
+            <a href="/products" class="btn btn-secondary" style="margin-top: 1.5rem;">
+              Clear search
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function sortProducts(sortBy) {
+    const grid = document.getElementById('products-grid');
+    const products = Array.from(grid.children);
+    
+    products.sort((a, b) => {
+      const aPrice = parseFloat(a.querySelector('[data-price]')?.getAttribute('data-price') || '0');
+      const bPrice = parseFloat(b.querySelector('[data-price]')?.getAttribute('data-price') || '0');
+      const aTitle = a.querySelector('h3')?.textContent || '';
+      const bTitle = b.querySelector('h3')?.textContent || '';
+      const aDate = a.getAttribute('data-date') || '';
+      const bDate = b.getAttribute('data-date') || '';
+      
+      switch(sortBy) {
+        case 'price-low':
+          return aPrice - bPrice;
+        case 'price-high':
+          return bPrice - aPrice;
+        case 'name':
+          return aTitle.localeCompare(bTitle);
+        case 'newest':
+        default:
+          return new Date(bDate) - new Date(aDate);
+      }
+    });
+    
+    products.forEach(product => grid.appendChild(product));
+  }
+</script>

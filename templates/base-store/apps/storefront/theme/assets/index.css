@@ -1,0 +1,223 @@
+/* Store Platform - Warm Cream Theme */
+:root {
+  /* Surface Colors - Warm cream palette */
+  --surface-50: #fefdfb;
+  --surface-100: #faf8f5;
+  --surface-200: #f5f1eb;
+  --surface-300: #e8e2d9;
+  --surface-400: #c4bdb2;
+  --surface-500: #9a9285;
+  --surface-600: #6b635a;
+  --surface-700: #4a443d;
+  --surface-800: #2d2924;
+  --surface-900: #1a1815;
+  --surface-950: #0f0e0c;
+
+  /* Accent Colors - Warm terracotta/rust */
+  --accent-50: #fef6f3;
+  --accent-100: #fde8e1;
+  --accent-200: #fbd0c3;
+  --accent-300: #f6a98f;
+  --accent-400: #e8785a;
+  --accent-500: #d95f3d;
+  --accent-600: #c44a2a;
+  --accent-700: #a33c22;
+  --accent-800: #873422;
+  --accent-900: #6f2f21;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--surface-100);
+  color: var(--surface-800);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  color: var(--surface-900);
+}
+
+::selection {
+  background: rgba(232, 120, 90, 0.3);
+  color: var(--accent-900);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* SVG Icons */
+svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+button svg,
+a svg {
+  pointer-events: none;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent-500);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-600);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--surface-700);
+  border: 1px solid var(--surface-300);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-200);
+  border-color: var(--surface-400);
+}
+
+/* Cards */
+.card {
+  background: white;
+  border: 1px solid var(--surface-300);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  border-color: var(--surface-400);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Inputs */
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid var(--surface-300);
+  border-radius: 0.5rem;
+  color: var(--surface-800);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.input::placeholder {
+  color: var(--surface-500);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px rgba(232, 120, 90, 0.15);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.badge-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Fix for sticky header */
+main {
+  padding-top: 4rem;
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  main {
+    padding-top: 5rem;
+  }
+}
+
+/* Mobile menu toggle visibility */
+@media (min-width: 768px) {
+  #mobile-menu-toggle {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  #mobile-menu-toggle {
+    display: block !important;
+  }
+  
+  header nav {
+    display: none !important;
+  }
+}

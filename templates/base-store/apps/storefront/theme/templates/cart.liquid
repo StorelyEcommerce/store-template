@@ -1,0 +1,330 @@
+{% assign page_title = 'Cart' %}
+
+<div style="min-height: 100vh; padding-top: 5rem;">
+  <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1rem;">
+    <!-- Header -->
+    <div style="margin-bottom: 2rem;">
+      <a
+        href="/products"
+        style="display: inline-flex; align-items: center; gap: 0.5rem; color: #6b635a; margin-bottom: 1rem; font-size: 0.9375rem;"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Continue Shopping
+      </a>
+      <h1 style="font-size: 2rem; font-family: 'Fraunces', Georgia, serif; color: #2d2924; font-weight: 500;">Your Cart</h1>
+      <p style="margin-top: 0.25rem; color: #4a443d;">
+        <span id="cart-item-count">0</span> item<span id="cart-item-count-plural">s</span>
+      </p>
+    </div>
+
+    <!-- Empty Cart State -->
+    <div id="empty-cart" style="display: none; min-height: 100vh; padding-top: 5rem; align-items: center; justify-content: center;">
+      <div style="text-align: center; max-width: 28rem; margin: 0 auto; padding: 0 1rem;">
+        <div style="width: 6rem; height: 6rem; margin: 0 auto; background: #f5f1eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9a9285" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+        <h1 style="font-size: 1.5rem; font-family: 'Fraunces', Georgia, serif; color: #2d2924;">Your cart is empty</h1>
+        <p style="margin-top: 0.5rem; color: #4a443d;">
+          Looks like you haven't added anything to your cart yet.
+        </p>
+        <a href="/products" class="btn btn-primary" style="margin-top: 2rem;">
+          Start Shopping
+        </a>
+      </div>
+    </div>
+
+    <!-- Cart Content -->
+    <div id="cart-content" style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <!-- Cart Items -->
+        <div id="cart-items" style="display: flex; flex-direction: column; gap: 1rem;">
+          <!-- Items will be loaded via JavaScript -->
+        </div>
+
+        <!-- Order Summary -->
+        <div>
+          <div class="card" style="padding: 1.5rem; position: sticky; top: 6rem;">
+            <h2 style="font-size: 1.125rem; font-weight: 600; color: #2d2924; margin-bottom: 1.5rem;">Order Summary</h2>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.875rem;">
+                <span style="color: #6b635a;">Subtotal</span>
+                <span id="cart-subtotal" style="color: #2d2924;">$0.00</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.875rem;">
+                <span style="color: #6b635a;">Shipping</span>
+                <span style="color: #9a9285;">Calculated at checkout</span>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #e8e2d9; padding-top: 1rem; margin-bottom: 1.5rem;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #2d2924; font-weight: 500;">Total</span>
+                <span id="cart-total" style="font-size: 1.25rem; font-weight: 600; color: #d95f3d;">$0.00</span>
+              </div>
+            </div>
+
+            <!-- Checkout Form -->
+            <form id="checkout-form" onsubmit="handleCheckout(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+              <div>
+                <label for="email" style="display: block; font-size: 0.875rem; font-weight: 500; color: #4a443d; margin-bottom: 0.5rem;">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  placeholder="you@example.com"
+                  class="input"
+                />
+              </div>
+
+              <div style="border-top: 1px solid #e8e2d9; padding-top: 1rem;">
+                <h3 style="font-size: 0.875rem; font-weight: 600; color: #2d2924; margin-bottom: 1rem;">
+                  Shipping Address
+                </h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                  <div>
+                    <label for="name" style="display: block; font-size: 0.75rem; font-weight: 500; color: #6b635a; margin-bottom: 0.25rem;">
+                      Full Name *
+                    </label>
+                    <input type="text" id="name" required placeholder="John Doe" class="input" />
+                  </div>
+
+                  <div>
+                    <label for="line1" style="display: block; font-size: 0.75rem; font-weight: 500; color: #6b635a; margin-bottom: 0.25rem;">
+                      Address Line 1 *
+                    </label>
+                    <input type="text" id="line1" required placeholder="123 Main St" class="input" />
+                  </div>
+
+                  <div>
+                    <label for="line2" style="display: block; font-size: 0.75rem; font-weight: 500; color: #6b635a; margin-bottom: 0.25rem;">
+                      Address Line 2
+                    </label>
+                    <input type="text" id="line2" placeholder="Apt, Suite, etc. (optional)" class="input" />
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div>
+                      <label for="city" style="display: block; font-size: 0.75rem; font-weight: 500; color: #6b635a; margin-bottom: 0.25rem;">
+                        City *
+                      </label>
+                      <input type="text" id="city" required placeholder="City" class="input" />
+                    </div>
+
+                    <div>
+                      <label for="state" style="display: block; font-size: 0.75rem; font-weight: 500; color: #6b635a; margin-bottom: 0.25rem;">
+                        State
+                      </label>
+                      <input type="text" id="state" placeholder="State" class="input" />
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <div>
+                      <label for="postalCode" style="display: block; font-size: 0.75rem; font-weight: 500; color: #6b635a; margin-bottom: 0.25rem;">
+                        ZIP Code *
+                      </label>
+                      <input type="text" id="postalCode" required placeholder="12345" class="input" />
+                    </div>
+
+                    <div>
+                      <label for="country" style="display: block; font-size: 0.75rem; font-weight: 500; color: #6b635a; margin-bottom: 0.25rem;">
+                        Country
+                      </label>
+                      <select id="country" class="input">
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="AU">Australia</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="checkout-error" style="display: none; font-size: 0.875rem; color: #dc2626;"></div>
+
+              <button
+                type="submit"
+                id="checkout-btn"
+                class="btn btn-primary"
+                style="padding: 1rem; margin-top: 0.5rem;"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                Checkout with Stripe
+              </button>
+            </form>
+
+            <p style="margin-top: 1rem; font-size: 0.75rem; color: #9a9285; text-align: center;">
+              Secure checkout powered by Stripe
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'cart.js' | asset_url }}"></script>
+<script>
+  async function loadCart() {
+    const cart = await window.CartAPI.getCart();
+    renderCart(cart);
+  }
+  
+  function renderCart(cart) {
+    const emptyCart = document.getElementById('empty-cart');
+    const cartContent = document.getElementById('cart-content');
+    const cartItems = document.getElementById('cart-items');
+    const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+    
+    if (itemCount === 0) {
+      emptyCart.style.display = 'flex';
+      cartContent.style.display = 'none';
+      return;
+    }
+    
+    emptyCart.style.display = 'none';
+    cartContent.style.display = 'grid';
+    
+    document.getElementById('cart-item-count').textContent = itemCount;
+    document.getElementById('cart-item-count-plural').textContent = itemCount !== 1 ? 's' : '';
+    
+    cartItems.innerHTML = cart.items.map(item => {
+      if (!item.product) return '';
+      const price = (item.product.priceCents * item.quantity) / 100;
+      const priceFormatted = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: item.product.currency.toUpperCase()
+      }).format(price);
+      
+      return `
+        <div class="card" style="padding: 1rem; display: flex; gap: 1rem;">
+          <a href="/products/${item.product.slug || item.product.id}" style="width: 6rem; height: 6rem; border-radius: 0.75rem; overflow: hidden; flex-shrink: 0;">
+            ${item.product.imageUrl ? 
+              `<img src="${item.product.imageUrl}" alt="${item.product.title}" style="width: 100%; height: 100%; object-fit: cover;" />` :
+              `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e8a598, #d4776a); display: flex; align-items: center; justify-content: center;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+              </div>`
+            }
+          </a>
+          <div style="flex: 1; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <a href="/products/${item.product.slug || item.product.id}" style="font-weight: 500; color: #2d2924;">
+                  ${item.product.title}
+                </a>
+                <p style="font-size: 0.875rem; color: #6b635a; margin-top: 0.25rem;">
+                  ${new Intl.NumberFormat('en-US', { style: 'currency', currency: item.product.currency.toUpperCase() }).format(item.product.priceCents / 100)} each
+                </p>
+              </div>
+              <button onclick="removeFromCart('${item.productId}')" style="padding: 0.5rem; background: none; border: none; color: #9a9285; cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </div>
+            <div style="margin-top: auto; padding-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; border: 1px solid #e8e2d9; border-radius: 0.5rem; overflow: hidden;">
+                <button onclick="updateCartQuantity('${item.productId}', ${item.quantity - 1})" style="padding: 0.5rem; background: white; border: none; color: #6b635a; cursor: pointer;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+                <span style="width: 2.5rem; text-align: center; color: #2d2924; font-size: 0.875rem; font-weight: 500;">${item.quantity}</span>
+                <button onclick="updateCartQuantity('${item.productId}', ${item.quantity + 1})" style="padding: 0.5rem; background: white; border: none; color: #6b635a; cursor: pointer;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+              </div>
+              <p style="font-weight: 600; color: #d95f3d;">${priceFormatted}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+    document.getElementById('cart-subtotal').textContent = formatter.format(cart.subtotalCents / 100);
+    document.getElementById('cart-total').textContent = formatter.format(cart.totalCents / 100);
+  }
+  
+  async function updateCartQuantity(productId, quantity) {
+    if (quantity <= 0) {
+      await window.CartAPI.removeFromCart(productId);
+    } else {
+      await window.CartAPI.updateQuantity(productId, quantity);
+    }
+    await loadCart();
+    updateCartCount();
+  }
+  
+  async function removeFromCart(productId) {
+    await window.CartAPI.removeFromCart(productId);
+    await loadCart();
+    updateCartCount();
+  }
+  
+  async function handleCheckout(e) {
+    e.preventDefault();
+    const btn = document.getElementById('checkout-btn');
+    const errorDiv = document.getElementById('checkout-error');
+    const form = e.target;
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Processing...';
+    errorDiv.style.display = 'none';
+    
+    const email = document.getElementById('email').value;
+    const shippingAddress = {
+      name: document.getElementById('name').value,
+      line1: document.getElementById('line1').value,
+      line2: document.getElementById('line2').value,
+      city: document.getElementById('city').value,
+      state: document.getElementById('state').value,
+      postalCode: document.getElementById('postalCode').value,
+      country: document.getElementById('country').value
+    };
+    
+    try {
+      const { checkoutUrl } = await window.CartAPI.createCheckout(email, shippingAddress);
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      errorDiv.textContent = error.message || 'Failed to create checkout session';
+      errorDiv.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+          <line x1="1" y1="10" x2="23" y2="10"></line>
+        </svg>
+        Checkout with Stripe
+      `;
+    }
+  }
+  
+  loadCart();
+</script>

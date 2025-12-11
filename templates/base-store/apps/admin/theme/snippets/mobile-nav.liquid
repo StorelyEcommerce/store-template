@@ -1,0 +1,155 @@
+<!-- Mobile Header -->
+<header class="lg:hidden fixed top-0 left-0 right-0 z-50 bg-surface-900 border-b border-surface-800">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; height: 3.5rem;">
+    <a href="/" style="display: flex; align-items: center; gap: 0.5rem;">
+      <div style="width: 2rem; height: 2rem; background: linear-gradient(135deg, #6366f1, #4338ca); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span style="font-weight: 600; color: #f1f5f9;">Admin</span>
+    </a>
+    
+    <button
+      onclick="toggleMobileMenu()"
+      style="padding: 0.5rem; color: #94a3b8; background: transparent; border: none; cursor: pointer;"
+    >
+      <svg id="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile Menu Overlay -->
+<div id="mobile-menu-overlay" onclick="toggleMobileMenu()" style="display: none; position: fixed; inset: 0; z-index: 40; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(4px);"></div>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" style="display: none; position: fixed; top: 3.5rem; left: 0; right: 0; z-index: 50; background: #0f172a; border-bottom: 1px solid #1e293b;">
+  <!-- Store Selector -->
+  <div style="padding: 1rem; border-bottom: 1px solid #1e293b;">
+    <button
+      onclick="toggleMobileStoreDropdown()"
+      style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: #1e293b; border-radius: 0.5rem; font-size: 0.875rem; color: #f1f5f9; border: none; cursor: pointer;"
+    >
+      <span id="mobile-selected-store">{{ selected_store.slug | default: 'Select store' }}</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="mobile-store-chevron" style="transition: transform 0.15s;">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+
+    <div id="mobile-store-dropdown" style="display: none; margin-top: 0.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; overflow: hidden;">
+      {% for store in stores %}
+        <button
+          onclick="selectStore('{{ store.id }}', '{{ store.slug }}')"
+          style="width: 100%; text-align: left; padding: 0.75rem; font-size: 0.875rem; {% if selected_store.id == store.id %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #cbd5e1;{% endif %} background: {% if selected_store.id == store.id %}rgba(99, 102, 241, 0.1){% else %}transparent{% endif %}; border: none; cursor: pointer; transition: background 0.15s;"
+        >
+          {{ store.slug }}
+        </button>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Nav Links -->
+  <nav style="padding: 1rem; display: flex; flex-direction: column; gap: 0.25rem;">
+    <a href="/" onclick="toggleMobileMenu()" class="nav-link {% if template == 'dashboard' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'dashboard' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+      Dashboard
+    </a>
+    <a href="/products" onclick="toggleMobileMenu()" class="nav-link {% if template == 'products' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'products' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      Products
+    </a>
+    <a href="/orders" onclick="toggleMobileMenu()" class="nav-link {% if template == 'orders' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'orders' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      Orders
+    </a>
+    <a href="/payments" onclick="toggleMobileMenu()" class="nav-link {% if template == 'payments' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'payments' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+        <line x1="1" y1="10" x2="23" y2="10"></line>
+      </svg>
+      Payments
+    </a>
+  </nav>
+</div>
+
+<!-- Bottom Tab Bar -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-900 border-t border-surface-800">
+  <div style="display: flex; align-items: center; justify-content: space-around; height: 4rem;">
+    <a href="/" class="mobile-nav-link {% if template == 'dashboard' %}active{% endif %}" style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.5rem 1rem; {% if template == 'dashboard' %}color: #818cf8;{% else %}color: #64748b;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+      <span style="font-size: 0.75rem;">Dashboard</span>
+    </a>
+    <a href="/products" class="mobile-nav-link {% if template == 'products' %}active{% endif %}" style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.5rem 1rem; {% if template == 'products' %}color: #818cf8;{% else %}color: #64748b;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      <span style="font-size: 0.75rem;">Products</span>
+    </a>
+    <a href="/orders" class="mobile-nav-link {% if template == 'orders' %}active{% endif %}" style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.5rem 1rem; {% if template == 'orders' %}color: #818cf8;{% else %}color: #64748b;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      <span style="font-size: 0.75rem;">Orders</span>
+    </a>
+    <a href="/payments" class="mobile-nav-link {% if template == 'payments' %}active{% endif %}" style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.5rem 1rem; {% if template == 'payments' %}color: #818cf8;{% else %}color: #64748b;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+        <line x1="1" y1="10" x2="23" y2="10"></line>
+      </svg>
+      <span style="font-size: 0.75rem;">Payments</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const overlay = document.getElementById('mobile-menu-overlay');
+    const icon = document.getElementById('menu-icon');
+    if (menu && overlay && icon) {
+      const isOpen = menu.style.display !== 'none';
+      menu.style.display = isOpen ? 'none' : 'block';
+      overlay.style.display = isOpen ? 'none' : 'block';
+      icon.innerHTML = isOpen 
+        ? '<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>'
+        : '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+    }
+  }
+  
+  function toggleMobileStoreDropdown() {
+    const dropdown = document.getElementById('mobile-store-dropdown');
+    const chevron = document.getElementById('mobile-store-chevron');
+    if (dropdown && chevron) {
+      const isOpen = dropdown.style.display !== 'none';
+      dropdown.style.display = isOpen ? 'none' : 'block';
+      chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+  }
+</script>

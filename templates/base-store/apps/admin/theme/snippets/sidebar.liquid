@@ -1,0 +1,122 @@
+<aside style="width: 16rem; background: #0f172a; border-right: 1px solid #1e293b; display: flex; flex-direction: column; height: 100vh;">
+  <!-- Logo -->
+  <div style="padding: 1rem; border-bottom: 1px solid #1e293b;">
+    <a href="/" style="display: flex; align-items: center; gap: 0.75rem;">
+      <div style="width: 2.25rem; height: 2.25rem; background: linear-gradient(135deg, #6366f1, #4338ca); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <div>
+        <span style="font-weight: 600; color: #f1f5f9;">Admin</span>
+        <p style="font-size: 0.75rem; color: #64748b;">Store Platform</p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Store Selector -->
+  <div style="padding: 0.75rem; border-bottom: 1px solid #1e293b;">
+    <div style="position: relative;">
+      <button
+        onclick="toggleStoreDropdown()"
+        id="store-selector-btn"
+        style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: #1e293b; border-radius: 0.5rem; font-size: 0.875rem; color: #f1f5f9; cursor: pointer; border: none; transition: background 0.15s;"
+      >
+        <span id="selected-store-name" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          {{ selected_store.slug | default: 'Select store' }}
+        </span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="store-chevron" style="transition: transform 0.15s;">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      <div id="store-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 0.25rem; background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 50; overflow: hidden;">
+        {% for store in stores %}
+          <button
+            onclick="selectStore('{{ store.id }}', '{{ store.slug }}')"
+            class="store-option"
+            style="width: 100%; text-align: left; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #cbd5e1; background: transparent; border: none; cursor: pointer; transition: background 0.15s; {% if selected_store.id == store.id %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% endif %}"
+          >
+            {{ store.slug }}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav style="flex: 1; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; overflow-y: auto;">
+    <a href="/" class="nav-link {% if template == 'dashboard' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'dashboard' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+      Dashboard
+    </a>
+    <a href="/products" class="nav-link {% if template == 'products' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'products' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      Products
+    </a>
+    <a href="/orders" class="nav-link {% if template == 'orders' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'orders' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      Orders
+    </a>
+    <a href="/payments" class="nav-link {% if template == 'payments' %}active{% endif %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; transition: all 0.15s; {% if template == 'payments' %}background: rgba(99, 102, 241, 0.1); color: #818cf8;{% else %}color: #94a3b8;{% endif %}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+        <line x1="1" y1="10" x2="23" y2="10"></line>
+      </svg>
+      Payments
+    </a>
+  </nav>
+
+  <!-- Footer -->
+  <div style="padding: 0.75rem; border-top: 1px solid #1e293b;">
+    <a href="/settings" class="nav-link" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; color: #94a3b8; transition: all 0.15s;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+      </svg>
+      Settings
+    </a>
+  </div>
+</aside>
+
+<script>
+  function toggleStoreDropdown() {
+    const dropdown = document.getElementById('store-dropdown');
+    const chevron = document.getElementById('store-chevron');
+    if (dropdown && chevron) {
+      const isOpen = dropdown.style.display !== 'none';
+      dropdown.style.display = isOpen ? 'none' : 'block';
+      chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+  }
+  
+  function selectStore(storeId, storeSlug) {
+    // Store selection in localStorage and reload
+    localStorage.setItem('selectedStoreId', storeId);
+    window.location.reload();
+  }
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    const btn = document.getElementById('store-selector-btn');
+    const dropdown = document.getElementById('store-dropdown');
+    if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+      document.getElementById('store-chevron').style.transform = 'rotate(0deg)';
+    }
+  });
+</script>

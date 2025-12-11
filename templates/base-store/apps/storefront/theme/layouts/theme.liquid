@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% if page_title %}{{ page_title }} - {% endif %}{{ store.name | default: 'Storely' }}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ 'index.css' | asset_url }}">
+    
+    <!-- Store Data for JavaScript -->
+    <script>
+      window.StoreData = {
+        storeSlug: {{ store.slug | json }},
+        apiUrl: {{ api_url | default: '/v1/stores/' | json }},
+        currency: {{ store.currency | default: 'usd' | json }}
+      };
+    </script>
+  </head>
+  <body>
+    {% render 'header' %}
+    
+    <main class="flex-1">
+      {{ content_for_layout }}
+    </main>
+    
+    {% render 'footer' %}
+    
+    <!-- JavaScript -->
+    <script src="{{ 'cart.js' | asset_url }}" defer></script>
+    <script src="{{ 'app.js' | asset_url }}" defer></script>
+  </body>
+</html>

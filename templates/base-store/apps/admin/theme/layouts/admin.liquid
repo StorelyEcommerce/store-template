@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% if page_title %}{{ page_title }} - {% endif %}Admin Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ 'index.css' | asset_url }}">
+    
+    <!-- Admin Data for JavaScript -->
+    <script>
+      window.AdminData = {
+        apiUrl: {{ api_url | default: '/v1/admin' | json }},
+        adminToken: {{ admin_token | default: 'admin-secret-key' | json }},
+        selectedStoreId: {{ selected_store.id | json }}
+      };
+    </script>
+  </head>
+  <body>
+    <div class="min-h-screen bg-surface-950">
+      <!-- Desktop Sidebar -->
+      <div class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-64 lg:block">
+        {% render 'sidebar' %}
+      </div>
+
+      <!-- Mobile Navigation -->
+      {% render 'mobile-nav' %}
+
+      <!-- Main Content -->
+      <main class="lg:pl-64 pt-14 lg:pt-0 pb-20 lg:pb-0 min-h-screen">
+        <div class="p-4 md:p-6 lg:p-8">
+          {{ content_for_layout }}
+        </div>
+      </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="{{ 'admin.js' | asset_url }}" defer></script>
+    <script src="{{ 'app.js' | asset_url }}" defer></script>
+  </body>
+</html>

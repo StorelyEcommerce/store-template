@@ -1,0 +1,135 @@
+<header style="position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(250, 248, 245, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #e8e2d9;">
+  <div style="max-width: 80rem; margin: 0 auto; padding: 0 1rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 4rem;">
+      <!-- Logo -->
+      <a href="/" style="display: flex; align-items: center; gap: 0.5rem;">
+        <div style="width: 2.25rem; height: 2.25rem; background: linear-gradient(135deg, #d95f3d, #c44a2a); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+          <span style="color: white; font-weight: 600; font-size: 1rem;">S</span>
+        </div>
+        <span style="font-family: 'Fraunces', Georgia, serif; font-size: 1.25rem; font-weight: 500; color: #2d2924;">{{ store.name | default: 'Storely' }}</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav style="display: flex; align-items: center; gap: 2rem;">
+        <a href="/" style="font-size: 0.9375rem; font-weight: 500; color: {% if template == 'index' %}#d95f3d{% else %}#6b635a{% endif %}; transition: color 0.2s;">
+          Home
+        </a>
+        <a href="/products" style="font-size: 0.9375rem; font-weight: 500; color: {% if template == 'collection' or template == 'product' %}#d95f3d{% else %}#6b635a{% endif %}; transition: color 0.2s;">
+          Shop
+        </a>
+      </nav>
+
+      <!-- Actions -->
+      <div style="display: flex; align-items: center; gap: 0.25rem;">
+        <!-- Search -->
+        <div style="position: relative;">
+          <form action="/products" method="get" id="search-form" style="display: none; align-items: center;">
+            <input
+              type="text"
+              name="search"
+              placeholder="Search..."
+              id="search-input"
+              style="width: 16rem; padding: 0.5rem 0.75rem; background: white; border: 1px solid #e8e2d9; border-radius: 0.5rem; font-size: 0.875rem; color: #2d2924; outline: none;"
+            />
+            <button
+              type="button"
+              onclick="closeSearch()"
+              style="margin-left: 0.5rem; padding: 0.5rem; background: transparent; border: none; color: #6b635a; cursor: pointer;"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </form>
+          <button
+            onclick="openSearch()"
+            style="padding: 0.5rem; background: transparent; border: none; color: #6b635a; cursor: pointer; border-radius: 0.5rem; transition: color 0.2s;"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Cart -->
+        <a href="/cart" style="position: relative; padding: 0.5rem; color: #6b635a; transition: color 0.2s;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span id="cart-count" style="position: absolute; top: -0.25rem; right: -0.25rem; width: 1.25rem; height: 1.25rem; background: #d95f3d; color: white; font-size: 0.75rem; font-weight: bold; border-radius: 50%; display: none; align-items: center; justify-content: center;">0</span>
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <button
+          onclick="toggleMobileMenu()"
+          id="mobile-menu-toggle"
+          style="display: none; padding: 0.5rem; background: transparent; border: none; color: #6b635a; cursor: pointer;"
+        >
+          <svg id="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div id="mobile-menu" style="display: none; background: #faf8f5; border-top: 1px solid #e8e2d9;">
+    <nav style="padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+      <a href="/" onclick="closeMobileMenu()" style="display: block; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; color: {% if template == 'index' %}#d95f3d{% else %}#6b635a{% endif %}; background: {% if template == 'index' %}rgba(217, 95, 61, 0.08){% else %}transparent{% endif %};">
+        Home
+      </a>
+      <a href="/products" onclick="closeMobileMenu()" style="display: block; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; color: {% if template == 'collection' or template == 'product' %}#d95f3d{% else %}#6b635a{% endif %}; background: {% if template == 'collection' or template == 'product' %}rgba(217, 95, 61, 0.08){% else %}transparent{% endif %};">
+        Shop
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  function openSearch() {
+    const form = document.getElementById('search-form');
+    const input = document.getElementById('search-input');
+    if (form && input) {
+      form.style.display = 'flex';
+      input.focus();
+    }
+  }
+  
+  function closeSearch() {
+    const form = document.getElementById('search-form');
+    if (form) {
+      form.style.display = 'none';
+    }
+  }
+  
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const toggle = document.getElementById('mobile-menu-toggle');
+    if (menu && toggle) {
+      const isOpen = menu.style.display !== 'none';
+      menu.style.display = isOpen ? 'none' : 'block';
+    }
+  }
+  
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    if (menu) {
+      menu.style.display = 'none';
+    }
+  }
+  
+  // Show mobile menu toggle on small screens
+  if (window.innerWidth < 768) {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    if (toggle) {
+      toggle.style.display = 'block';
+    }
+  }
+</script>

@@ -1,0 +1,196 @@
+{% assign page_title = product.title %}
+
+<div style="min-height: 100vh; padding-top: 5rem;">
+  <div style="max-width: 80rem; margin: 0 auto; padding: 2rem 1rem;">
+    <!-- Back Link -->
+    <a
+      href="/products"
+      style="display: inline-flex; align-items: center; gap: 0.5rem; color: #6b635a; margin-bottom: 2rem; font-size: 0.9375rem;"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back to Products
+    </a>
+
+    <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem;">
+        <!-- Image -->
+        <div style="aspect-ratio: 1; border-radius: 1rem; overflow: hidden; background: #f5f1eb; border: 1px solid #e8e2d9;">
+          {% if product.imageUrl %}
+            <img
+              src="{{ product.imageUrl }}"
+              alt="{{ product.title }}"
+              style="width: 100%; height: 100%; object-fit: cover;"
+            />
+          {% else %}
+            {% assign color_index = product.id | slice: -1 | plus: 0 | modulo: 5 %}
+            {% assign gradients = '#e8a598,#d4776a|#c9b896,#a89774|#98c4b8,#6fa396|#b8a4c9,#957aab|#dbc398,#c4a66a' | split: '|' %}
+            {% assign gradient_colors = gradients[color_index] | split: ',' %}
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, {{ gradient_colors[0] }}, {{ gradient_colors[1] }}); display: flex; align-items: center; justify-content: center;">
+              <svg width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Details -->
+        <div style="display: flex; flex-direction: column;">
+          <div style="flex: 1;">
+            <!-- Title & Price -->
+            <h1 style="font-size: 2rem; font-family: 'Fraunces', Georgia, serif; color: #2d2924; font-weight: 500;">
+              {{ product.title }}
+            </h1>
+            <p style="margin-top: 1rem; font-size: 1.75rem; font-weight: 600; color: #d95f3d;">
+              {{ product.priceCents | divided_by: 100.0 | money: store.currency | default: 'USD' }}
+            </p>
+
+            <!-- Stock Status -->
+            {% if product.stock == 0 %}
+              <div style="margin-top: 1rem; display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 0.5rem; color: #dc2626; font-size: 0.875rem;">
+                Out of stock
+              </div>
+            {% endif %}
+            {% if product.stock != blank and product.stock > 0 and product.stock <= 5 %}
+              <div style="margin-top: 1rem; display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 0.5rem; color: #d97706; font-size: 0.875rem;">
+                Only {{ product.stock }} left in stock
+              </div>
+            {% endif %}
+
+            <!-- Description -->
+            {% if product.description %}
+              <div style="margin-top: 2rem;">
+                <h2 style="font-size: 0.8125rem; font-weight: 600; color: #6b635a; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+                  Description
+                </h2>
+                <p style="color: #4a443d; line-height: 1.7;">{{ product.description }}</p>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Add to Cart -->
+          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e8e2d9;">
+            <!-- Quantity Selector -->
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+              <span style="font-size: 0.875rem; font-weight: 500; color: #4a443d;">Quantity</span>
+              <div style="display: flex; align-items: center; border: 1px solid #e8e2d9; border-radius: 0.5rem; overflow: hidden;">
+                <button
+                  onclick="updateQuantity(-1)"
+                  id="quantity-decrease"
+                  style="padding: 0.75rem; background: white; border: none; color: #6b635a; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                  {% if product.stock == 0 %}disabled{% endif %}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+                <span id="quantity" style="width: 3rem; text-align: center; color: #2d2924; font-weight: 500; background: white;">1</span>
+                <button
+                  onclick="updateQuantity(1)"
+                  id="quantity-increase"
+                  style="padding: 0.75rem; background: white; border: none; color: #6b635a; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                  {% if product.stock == 0 %}disabled{% endif %}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <button
+              onclick="addToCart('{{ product.id }}')"
+              id="add-to-cart-btn"
+              class="btn btn-primary"
+              style="width: 100%; padding: 1rem; font-size: 1rem;"
+              {% if product.stock == 0 %}disabled{% endif %}
+            >
+              <span id="add-to-cart-text">
+                {% if product.stock == 0 %}
+                  Out of Stock
+                {% else %}
+                  Add to Cart
+                {% endif %}
+              </span>
+            </button>
+
+            <!-- Subtotal -->
+            {% if product.stock != 0 %}
+              <p id="subtotal" style="margin-top: 1rem; font-size: 0.875rem; color: #6b635a; text-align: center;">
+                Subtotal: {{ product.priceCents | divided_by: 100.0 | money: store.currency | default: 'USD' }}
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let quantity = 1;
+  const productPrice = {{ product.priceCents }};
+  const productStock = {{ product.stock | default: null }};
+  const currency = {{ store.currency | default: 'usd' | json }};
+  
+  function updateQuantity(change) {
+    const newQuantity = quantity + change;
+    if (newQuantity < 1) return;
+    if (productStock !== null && newQuantity > productStock) return;
+    
+    quantity = newQuantity;
+    document.getElementById('quantity').textContent = quantity;
+    updateSubtotal();
+    updateButtons();
+  }
+  
+  function updateSubtotal() {
+    const subtotal = (productPrice * quantity) / 100;
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency.toUpperCase()
+    });
+    document.getElementById('subtotal').textContent = `Subtotal: ${formatter.format(subtotal)}`;
+  }
+  
+  function updateButtons() {
+    const decreaseBtn = document.getElementById('quantity-decrease');
+    const increaseBtn = document.getElementById('quantity-increase');
+    if (decreaseBtn) decreaseBtn.disabled = quantity <= 1;
+    if (increaseBtn) increaseBtn.disabled = productStock !== null && quantity >= productStock;
+  }
+  
+  async function addToCart(productId) {
+    const btn = document.getElementById('add-to-cart-btn');
+    const text = document.getElementById('add-to-cart-text');
+    if (!btn || !text) return;
+    
+    btn.disabled = true;
+    text.textContent = 'Adding...';
+    
+    try {
+      await window.CartAPI.addToCart(productId, quantity);
+      text.textContent = 'Added to Cart ✓';
+      btn.style.background = '#10b981';
+      setTimeout(() => {
+        text.textContent = 'Add to Cart';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 2000);
+      updateCartCount();
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      text.textContent = 'Add to Cart';
+      btn.disabled = false;
+      alert('Failed to add item to cart. Please try again.');
+    }
+  }
+  
+  updateButtons();
+</script>

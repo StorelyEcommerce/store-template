@@ -1,0 +1,279 @@
+{% assign page_title = 'Orders' %}
+
+{% render 'page-header', title: 'Orders', description: 'Order history for ' | append: selected_store.slug %}
+
+<!-- Status Filter Tabs -->
+<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+  {% assign statuses = 'all|pending|paid|shipped|delivered|cancelled|refunded' | split: '|' %}
+  {% for status in statuses %}
+    {% assign status_count = 0 %}
+    {% if status == 'all' %}
+      {% assign status_count = orders.size %}
+    {% else %}
+      {% for order in orders %}
+        {% if order.status == status %}
+          {% assign status_count = status_count | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    
+    <button
+      onclick="filterOrders('{{ status }}')"
+      id="filter-{{ status }}"
+      class="filter-tab {% if forloop.first %}active{% endif %}"
+      style="padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; background: {% if forloop.first %}rgba(99, 102, 241, 0.1); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);{% else %}transparent; color: #94a3b8; border: 1px solid transparent;{% endif %}; cursor: pointer; transition: all 0.15s;"
+    >
+      {{ status | capitalize }}
+      {% if status_count > 0 %}
+        <span style="margin-left: 0.5rem; font-size: 0.75rem; opacity: 0.6;">({{ status_count }})</span>
+      {% endif %}
+    </button>
+  {% endfor %}
+</div>
+
+<!-- Orders List -->
+<div id="orders-container">
+  {% if orders.size == 0 %}
+    <div class="card" style="text-align: center; padding: 5rem 0;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" style="margin: 0 auto 1rem;">
+        <circle cx="9" cy="21" r="1"></circle>
+        <circle cx="20" cy="21" r="1"></circle>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+      </svg>
+      <h2 style="font-size: 1.125rem; font-weight: 600; color: #f1f5f9;">No orders found</h2>
+      <p style="margin-top: 0.25rem; color: #64748b;">
+        Orders will appear here once customers start purchasing
+      </p>
+    </div>
+  {% else %}
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {% for order in orders %}
+        <div class="card" style="overflow: hidden;" data-order-status="{{ order.status }}">
+          <!-- Order Header -->
+          <button
+            onclick="toggleOrderDetails('{{ order.id }}')"
+            style="width: 100%; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; background: transparent; border: none; cursor: pointer; transition: background 0.15s;"
+            onmouseover="this.style.background='rgba(30, 41, 59, 0.5)';"
+            onmouseout="this.style.background='transparent';"
+          >
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div>
+                <p style="font-size: 0.875rem; font-weight: 500; color: #f1f5f9; text-align: left;">
+                  {{ order.userEmail }}
+                </p>
+                <p style="font-size: 0.75rem; color: #64748b;">
+                  {{ order.createdAt | date: '%b %d, %Y %I:%M %p' }}
+                </p>
+              </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="text-align: right;">
+                <p style="font-size: 0.875rem; font-family: 'JetBrains Mono', monospace; color: #f1f5f9;">
+                  {{ order.totalCents | divided_by: 100.0 | money: order.currency }}
+                </p>
+                <span class="badge {% if order.status == 'paid' %}badge-success{% elsif order.status == 'pending' %}badge-warning{% elsif order.status == 'shipped' or order.status == 'delivered' %}badge-info{% else %}badge-error{% endif %}" style="margin-top: 0.25rem; display: inline-block;">
+                  {{ order.status }}
+                </span>
+              </div>
+              <svg id="chevron-{{ order.id }}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="transition: transform 0.15s;">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </button>
+
+          <!-- Order Details -->
+          <div id="details-{{ order.id }}" style="display: none; padding: 1rem 1.25rem; border-top: 1px solid #1e293b; background: rgba(15, 23, 42, 0.5);">
+            <!-- Status Change Section -->
+            <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #1e293b;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <h4 style="font-size: 0.75rem; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                    Update Status
+                  </h4>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <select
+                      id="status-{{ order.id }}"
+                      onchange="updateOrderStatus('{{ order.id }}', this.value)"
+                      style="background: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #f1f5f9; cursor: pointer; outline: none;"
+                    >
+                      <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                      <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Paid</option>
+                      <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                      <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                      <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                      <option value="refunded" {% if order.status == 'refunded' %}selected{% endif %}>Refunded</option>
+                    </select>
+                    <span id="status-loading-{{ order.id }}" style="display: none; width: 1rem; height: 1rem; border: 2px solid rgba(99, 102, 241, 0.3); border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite;"></span>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <p style="font-size: 0.75rem; color: #64748b;">Current Status</p>
+                  <span class="badge {% if order.status == 'paid' %}badge-success{% elsif order.status == 'pending' %}badge-warning{% elsif order.status == 'shipped' or order.status == 'delivered' %}badge-info{% else %}badge-error{% endif %}" id="current-status-{{ order.id }}">
+                    {{ order.status }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 1.5rem;">
+              <!-- Order Items -->
+              <div>
+                <h4 style="font-size: 0.75rem; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+                  Items ({{ order.items.size }})
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  {% for item in order.items %}
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;">
+                      <span style="color: #cbd5e1;">
+                        {{ item.quantity }}x {{ item.productTitle | default: 'Product' }}
+                      </span>
+                      <span style="font-family: 'JetBrains Mono', monospace; color: #f1f5f9;">
+                        {{ item.priceCents | times: item.quantity | divided_by: 100.0 | money: order.currency }}
+                      </span>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- Shipping Address -->
+              <div>
+                <h4 style="font-size: 0.75rem; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+                  Shipping Address
+                </h4>
+                {% if order.shippingAddress %}
+                  <div style="font-size: 0.875rem; color: #cbd5e1;">
+                    <p style="font-weight: 500; color: #f1f5f9;">{{ order.shippingAddress.name }}</p>
+                    <p>{{ order.shippingAddress.line1 }}</p>
+                    {% if order.shippingAddress.line2 %}
+                      <p>{{ order.shippingAddress.line2 }}</p>
+                    {% endif %}
+                    <p>
+                      {{ order.shippingAddress.city }}{% if order.shippingAddress.state %}, {{ order.shippingAddress.state }}{% endif %} {{ order.shippingAddress.postalCode }}
+                    </p>
+                    <p>{{ order.shippingAddress.country }}</p>
+                  </div>
+                {% else %}
+                  <p style="font-size: 0.875rem; color: #64748b; font-style: italic;">No address provided</p>
+                {% endif %}
+              </div>
+
+              <!-- Order Info -->
+              <div>
+                <h4 style="font-size: 0.75rem; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+                  Order Details
+                </h4>
+                <dl style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+                  <div style="display: flex; justify-content: space-between;">
+                    <dt style="color: #64748b;">Order ID</dt>
+                    <dd style="color: #cbd5e1; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">{{ order.id }}</dd>
+                  </div>
+                  {% if order.stripeCheckoutSessionId %}
+                    <div style="display: flex; justify-content: space-between;">
+                      <dt style="color: #64748b;">Stripe</dt>
+                      <dd style="color: #cbd5e1; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">
+                        {{ order.stripeCheckoutSessionId | slice: 0, 16 }}...
+                      </dd>
+                    </div>
+                  {% endif %}
+                  {% if order.stripePaymentIntentId %}
+                    <div style="display: flex; justify-content: space-between;">
+                      <dt style="color: #64748b;">Payment</dt>
+                      <dd style="color: #cbd5e1; font-size: 0.75rem;">
+                        <a 
+                          href="https://dashboard.stripe.com/payments/{{ order.stripePaymentIntentId }}"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style="display: inline-flex; align-items: center; gap: 0.25rem; color: #818cf8;"
+                        >
+                          View
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                          </svg>
+                        </a>
+                      </dd>
+                    </div>
+                  {% endif %}
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<script src="{{ 'admin.js' | asset_url }}"></script>
+<script>
+  let currentFilter = 'all';
+  
+  function filterOrders(status) {
+    currentFilter = status;
+    
+    // Update active tab
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.classList.remove('active');
+      tab.style.background = 'transparent';
+      tab.style.color = '#94a3b8';
+      tab.style.borderColor = 'transparent';
+    });
+    
+    const activeTab = document.getElementById('filter-' + status);
+    if (activeTab) {
+      activeTab.classList.add('active');
+      activeTab.style.background = 'rgba(99, 102, 241, 0.1)';
+      activeTab.style.color = '#818cf8';
+      activeTab.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+    }
+    
+    // Filter orders
+    const orders = document.querySelectorAll('[data-order-status]');
+    orders.forEach(order => {
+      const orderStatus = order.getAttribute('data-order-status');
+      if (status === 'all' || orderStatus === status) {
+        order.style.display = '';
+      } else {
+        order.style.display = 'none';
+      }
+    });
+  }
+  
+  function toggleOrderDetails(orderId) {
+    const details = document.getElementById('details-' + orderId);
+    const chevron = document.getElementById('chevron-' + orderId);
+    if (details && chevron) {
+      const isOpen = details.style.display !== 'none';
+      details.style.display = isOpen ? 'none' : 'block';
+      chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+  }
+  
+  async function updateOrderStatus(orderId, newStatus) {
+    const loading = document.getElementById('status-loading-' + orderId);
+    const statusBadge = document.getElementById('current-status-' + orderId);
+    
+    if (loading) loading.style.display = 'block';
+    
+    try {
+      await window.AdminAPI.updateOrderStatus(orderId, newStatus);
+      if (statusBadge) {
+        statusBadge.textContent = newStatus;
+        // Update badge class
+        statusBadge.className = 'badge ' + (newStatus === 'paid' ? 'badge-success' : newStatus === 'pending' ? 'badge-warning' : newStatus === 'shipped' || newStatus === 'delivered' ? 'badge-info' : 'badge-error');
+      }
+      // Update order card status attribute
+      const orderCard = document.querySelector(`[data-order-status] button[onclick*="${orderId}"]`)?.closest('[data-order-status]');
+      if (orderCard) {
+        orderCard.setAttribute('data-order-status', newStatus);
+      }
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+      alert('Failed to update order status');
+    } finally {
+      if (loading) loading.style.display = 'none';
+    }
+  }
+</script>

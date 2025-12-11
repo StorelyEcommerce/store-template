@@ -1,0 +1,180 @@
+{% assign page_title = 'Payments' %}
+
+{% render 'page-header', title: 'Payments', description: 'Payment history for ' | append: selected_store.slug %}
+
+<!-- Summary Card -->
+{% assign total_succeeded = 0 %}
+{% for payment in payments %}
+  {% if payment.status == 'succeeded' %}
+    {% assign total_succeeded = total_succeeded | plus: payment.amountCents %}
+  {% endif %}
+{% endfor %}
+
+{% assign succeeded_count = 0 %}
+{% assign refunded_count = 0 %}
+{% assign failed_count = 0 %}
+{% for payment in payments %}
+  {% if payment.status == 'succeeded' %}
+    {% assign succeeded_count = succeeded_count | plus: 1 %}
+  {% elsif payment.status == 'refunded' %}
+    {% assign refunded_count = refunded_count | plus: 1 %}
+  {% elsif payment.status == 'failed' %}
+    {% assign failed_count = failed_count | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+<div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    <div>
+      <p style="font-size: 0.875rem; color: #64748b;">Total Successful Payments</p>
+      <p style="font-size: 1.875rem; font-weight: 600; color: #f1f5f9; margin-top: 0.25rem;">
+        {{ total_succeeded | divided_by: 100.0 | money: 'usd' }}
+      </p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+      <span class="badge badge-success">
+        {{ succeeded_count }} succeeded
+      </span>
+      {% if refunded_count > 0 %}
+        <span class="badge badge-warning">
+          {{ refunded_count }} refunded
+        </span>
+      {% endif %}
+      {% if failed_count > 0 %}
+        <span class="badge badge-error">
+          {{ failed_count }} failed
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Status Filter Tabs -->
+<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+  {% assign statuses = 'all|succeeded|requires_payment|failed|refunded' | split: '|' %}
+  {% for status in statuses %}
+    {% assign status_count = 0 %}
+    {% if status == 'all' %}
+      {% assign status_count = payments.size %}
+    {% else %}
+      {% for payment in payments %}
+        {% if payment.status == status %}
+          {% assign status_count = status_count | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    
+    <button
+      onclick="filterPayments('{{ status }}')"
+      id="payment-filter-{{ status }}"
+      class="filter-tab {% if forloop.first %}active{% endif %}"
+      style="padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; background: {% if forloop.first %}rgba(99, 102, 241, 0.1); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);{% else %}transparent; color: #94a3b8; border: 1px solid transparent;{% endif %}; cursor: pointer; transition: all 0.15s;"
+    >
+      {% if status == 'requires_payment' %}Pending{% else %}{{ status | capitalize }}{% endif %}
+      {% if status_count > 0 %}
+        <span style="margin-left: 0.5rem; font-size: 0.75rem; opacity: 0.6;">({{ status_count }})</span>
+      {% endif %}
+    </button>
+  {% endfor %}
+</div>
+
+<!-- Payments Table -->
+<div id="payments-container">
+  {% if payments.size == 0 %}
+    <div class="card" style="text-align: center; padding: 5rem 0;">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2" style="margin: 0 auto 1rem;">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+        <line x1="1" y1="10" x2="23" y2="10"></line>
+      </svg>
+      <h2 style="font-size: 1.125rem; font-weight: 600; color: #f1f5f9;">No payments found</h2>
+      <p style="margin-top: 0.25rem; color: #64748b;">
+        Payments will appear here once customers complete purchases
+      </p>
+    </div>
+  {% else %}
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Order</th>
+            <th>Stripe Payment</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="payments-table-body">
+          {% for payment in payments %}
+            <tr data-payment-status="{{ payment.status }}">
+              <td style="font-family: 'JetBrains Mono', monospace; color: #f1f5f9;">
+                {{ payment.amountCents | divided_by: 100.0 | money: payment.currency }}
+              </td>
+              <td>
+                <span class="badge {% if payment.status == 'succeeded' %}badge-success{% elsif payment.status == 'requires_payment' %}badge-warning{% elsif payment.status == 'refunded' %}badge-info{% else %}badge-error{% endif %}">
+                  {% if payment.status == 'requires_payment' %}pending{% else %}{{ payment.status }}{% endif %}
+                </span>
+              </td>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #94a3b8;">
+                {{ payment.orderId | slice: 0, 12 }}...
+              </td>
+              <td>
+                <a
+                  href="https://dashboard.stripe.com/payments/{{ payment.stripePaymentIntentId }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style="display: inline-flex; align-items: center; gap: 0.25rem; color: #818cf8; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;"
+                >
+                  {{ payment.stripePaymentIntentId | slice: 0, 16 }}...
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                </a>
+              </td>
+              <td style="color: #94a3b8; font-size: 0.875rem;">
+                {{ payment.createdAt | date: '%b %d, %Y %I:%M %p' }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>
+
+<script src="{{ 'admin.js' | asset_url }}"></script>
+<script>
+  let currentPaymentFilter = 'all';
+  
+  function filterPayments(status) {
+    currentPaymentFilter = status;
+    
+    // Update active tab
+    document.querySelectorAll('#payments-container .filter-tab').forEach(tab => {
+      tab.classList.remove('active');
+      tab.style.background = 'transparent';
+      tab.style.color = '#94a3b8';
+      tab.style.borderColor = 'transparent';
+    });
+    
+    const activeTab = document.getElementById('payment-filter-' + status);
+    if (activeTab) {
+      activeTab.classList.add('active');
+      activeTab.style.background = 'rgba(99, 102, 241, 0.1)';
+      activeTab.style.color = '#818cf8';
+      activeTab.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+    }
+    
+    // Filter payments
+    const payments = document.querySelectorAll('#payments-table-body tr[data-payment-status]');
+    payments.forEach(payment => {
+      const paymentStatus = payment.getAttribute('data-payment-status');
+      if (status === 'all' || paymentStatus === status) {
+        payment.style.display = '';
+      } else {
+        payment.style.display = 'none';
+      }
+    });
+  }
+</script>

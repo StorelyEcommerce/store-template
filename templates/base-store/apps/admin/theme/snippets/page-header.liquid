@@ -1,0 +1,25 @@
+{% comment %}
+  Page Header Snippet
+  Usage: {% render 'page-header', title: 'Page Title', description: 'Description', actions: '<button>Action</button>' %}
+{% endcomment %}
+
+<div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+  {% if actions %}
+    <div style="display: flex; flex-direction: column; gap: 1rem; align-items: flex-start;">
+      <div>
+        <h1 style="font-size: 1.5rem; font-weight: 600; color: #f1f5f9;">{{ title }}</h1>
+        {% if description %}
+          <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #64748b;">{{ description }}</p>
+        {% endif %}
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">{{ actions }}</div>
+    </div>
+  {% else %}
+    <div>
+      <h1 style="font-size: 1.5rem; font-weight: 600; color: #f1f5f9;">{{ title }}</h1>
+      {% if description %}
+        <p style="margin-top: 0.25rem; font-size: 0.875rem; color: #64748b;">{{ description }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
