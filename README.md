@@ -35,6 +35,7 @@ store-template/
 A comprehensive full-stack ecommerce template with:
 
 **Storefront (Customer-Facing):**
+- Liquid templates for server-side rendering (SEO friendly)
 - Product catalog with grid views and search
 - Shopping cart with local storage persistence
 - Checkout flow with Stripe integration hooks
@@ -42,6 +43,7 @@ A comprehensive full-stack ecommerce template with:
 - Responsive design for all devices
 
 **Admin Dashboard:**
+- Liquid templates for server-side rendering
 - Dashboard with key metrics and statistics
 - Product management (CRUD operations)
 - Order management and tracking
@@ -60,20 +62,19 @@ A comprehensive full-stack ecommerce template with:
 - `shared-config` - Shared configuration
 - `shared-types` - TypeScript interfaces and types
 - `shared-utils` - API client, formatters
-- `ui` - Reusable React components
+- `ui` - Reusable components (styles)
 
 **Infrastructure:**
 - D1 database schema (`infra/db/schema.sql`)
 - Sample seed data (`infra/db/seed.sql`)
 
 **Tech Stack:**
-- React 18+ with TypeScript
-- Vite for build tooling
+- LiquidJS for templating (Server-Side Rendering)
+- Node.js & Express for serving apps
 - Tailwind CSS for styling
-- React Router for navigation
 - Hono for API routing
 - Cloudflare Workers & D1
-- Lucide React for icons
+- Lucide for icons
 
 ## Deployment
 
@@ -127,22 +128,24 @@ To work on the base-store template locally:
 
 ```bash
 cd templates/base-store
-npm install
 
 # Initialize and seed database
 npm run db:init
 npm run db:seed
 
 # Run edge API (port 8787)
-npm run dev:api
+cd apps/edge-api
+npm install
+npm run dev
 
-# Run storefront (port 5173)
-npm run dev:storefront
+# Run storefront (port 3000)
+cd ../storefront-app
+npm install
+npm run dev
 
-# Run admin dashboard (port 5174)
-npm run dev:admin
-
-# Run all apps
+# Run admin dashboard (port 3001)
+cd ../admin-app
+npm install
 npm run dev
 ```
 
