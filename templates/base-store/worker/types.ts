@@ -1,4 +1,4 @@
-// Store types (previously from @store/shared-types)
+// Store types
 export interface Store {
     id: string;
     slug: string;
@@ -62,74 +62,26 @@ export interface ShippingAddress {
     country: string;
 }
 
-// Default theme config (previously from @store/shared-config)
+// Default theme config
 export const DEFAULT_THEME: StoreThemeConfig = {
     primaryColor: '#1a1a1a',
     secondaryColor: '#f5f5f5',
     fontFamily: 'Inter, sans-serif',
 };
 
-// Shipping types for EasyPost integration
-export interface ShippingSettings {
-    id: string;
-    storeId: string;
-    easypostApiKey?: string;
-    fromName?: string;
-    fromCompany?: string;
-    fromStreet1?: string;
-    fromStreet2?: string;
-    fromCity?: string;
-    fromState?: string;
-    fromZip?: string;
-    fromCountry?: string;
-    fromPhone?: string;
-    createdAt?: string;
-    updatedAt?: string;
-}
-
-export interface ShippingRate {
-    id: string;
-    carrier: string;
-    service: string;
-    rate: number;
-    currency: string;
-    deliveryDays?: number;
-    deliveryDate?: string;
-}
-
-export interface Shipment {
-    id: string;
-    storeId: string;
-    orderId: string;
-    easypostShipmentId?: string;
-    carrier?: string;
-    service?: string;
-    trackingNumber?: string;
-    trackingUrl?: string;
-    labelUrl?: string;
-    rateCents?: number;
-    currency?: string;
-    status: 'pending' | 'purchased' | 'in_transit' | 'delivered';
-    createdAt?: string;
-    updatedAt?: string;
-}
-
-// Hono environment types
-export type Bindings = {
+// Cloudflare Worker environment bindings
+export type Env = {
     DB: D1Database;
     STRIPE_SECRET_KEY: string;
     STRIPE_WEBHOOK_SECRET: string;
     ADMIN_API_KEY: string;
-    // Platform JWT validation (for centralized admin dashboard)
-    PLATFORM_JWT_SECRET?: string;
-    ADMIN_DASHBOARD_URL?: string; // e.g., https://vibesdk.com or http://localhost:5173
 };
+
+// Hono environment types
+export type Bindings = Env;
 
 export type Variables = {
     store: Store;
-    // Set by JWT auth middleware when using platform authentication
-    userId?: string;
-    userEmail?: string;
 };
 
 export type HonoEnv = {

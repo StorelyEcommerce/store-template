@@ -56,15 +56,25 @@ for template_dir in templates/*/; do
         rm -f "../../zips/${template_name}.zip"
         
         # Create zip excluding unwanted files/directories
+        # Use ** patterns to catch nested directories
         zip -r "../../zips/${template_name}.zip" . \
             -x "*.git*" \
             -x "node_modules/*" \
+            -x "*/node_modules/*" \
+            -x "**/node_modules/*" \
             -x ".DS_Store" \
+            -x "*/.DS_Store" \
             -x "*.log" \
             -x "dist/*" \
+            -x "*/dist/*" \
             -x ".env" \
             -x ".env.local" \
-            -x ".env.*.local"
+            -x ".env.*.local" \
+            -x ".wrangler/*" \
+            -x "*/.wrangler/*" \
+            -x "package-lock.json" \
+            -x "*/package-lock.json" \
+            -x "*.zip"
         
         cd ../..
         

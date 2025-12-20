@@ -121,3 +121,45 @@ CREATE TABLE webhook_events (
   FOREIGN KEY (store_id) REFERENCES stores(id)
 );
 CREATE INDEX idx_webhook_events_store_id ON webhook_events(store_id);
+
+-- Store Shipping Settings (EasyPost integration)
+CREATE TABLE store_shipping_settings (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL UNIQUE,
+  easypost_api_key TEXT, -- Merchant's EasyPost API key
+  from_name TEXT,
+  from_company TEXT,
+  from_street1 TEXT,
+  from_street2 TEXT,
+  from_city TEXT,
+  from_state TEXT,
+  from_zip TEXT,
+  from_country TEXT DEFAULT 'US',
+  from_phone TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (store_id) REFERENCES stores(id)
+);
+CREATE INDEX idx_store_shipping_settings_store_id ON store_shipping_settings(store_id);
+
+-- Shipments (shipping labels and tracking)
+CREATE TABLE shipments (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  order_id TEXT NOT NULL,
+  easypost_shipment_id TEXT,
+  carrier TEXT, -- 'USPS', 'UPS', 'FedEx', etc.
+  service TEXT, -- 'Priority', 'Ground', 'Express', etc.
+  tracking_number TEXT,
+  tracking_url TEXT,
+  label_url TEXT,
+  rate_cents INTEGER,
+  currency TEXT DEFAULT 'USD',
+  status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'purchased', 'in_transit', 'delivered'
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (store_id) REFERENCES stores(id),
+  FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+CREATE INDEX idx_shipments_store_id ON shipments(store_id);
+CREATE INDEX idx_shipments_order_id ON shipments(order_id);

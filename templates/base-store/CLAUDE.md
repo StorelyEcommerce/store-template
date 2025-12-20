@@ -6,22 +6,20 @@ This is a full-stack ecommerce store template with customer storefront, admin da
 
 ```
 base-store/
-├── src/                    # Customer-facing storefront (React + Vite)
-│   ├── App.tsx            # Main app with routing
-│   ├── main.tsx           # Entry point
-│   ├── index.css          # Global styles (Tailwind)
-│   ├── api/               # API client
-│   ├── components/        # Reusable components
-│   ├── context/           # React context (Cart)
-│   └── pages/             # Page components
-├── admin-app/             # Admin dashboard (React + Vite)
-│   ├── src/
-│   │   ├── App.tsx
-│   │   ├── api/
-│   │   ├── components/
-│   │   ├── context/
-│   │   └── pages/
-│   └── [config files]
+├── storefront-app/         # Customer-facing storefront (Express + Liquid)
+│   ├── server.js          # Express server with LiquidJS
+│   ├── theme/
+│   │   ├── layouts/       # Base layouts (theme.liquid)
+│   │   ├── templates/     # Page templates (index, product, cart, etc.)
+│   │   ├── snippets/      # Reusable components (header, footer, product-card)
+│   │   ├── assets/        # CSS, JS (styles.css → compiled → index.css)
+│   │   └── config/        # Liquid filters
+│   ├── tailwind.config.js # Tailwind configuration
+│   └── package.json       # Storefront dependencies
+├── admin-app/             # Admin dashboard (Express + Liquid)
+│   ├── server.js
+│   ├── theme/
+│   └── package.json
 ├── api-worker/            # Cloudflare Workers API (Hono)
 │   ├── src/
 │   │   ├── index.ts       # API entry point
@@ -33,12 +31,12 @@ base-store/
 │   └── db/
 │       ├── schema.sql     # D1 database schema
 │       └── seed.sql       # Sample data
-└── public/                # Static assets
+└── package.json           # Root orchestration scripts
 ```
 
-## Main Storefront (Root)
+## Customer Storefront (storefront-app/)
 
-The main storefront is the primary app that runs when you execute `npm run dev` or `bun run dev`.
+Server-side rendered storefront using Express and Liquid templates.
 
 ### Features
 - Product catalog with grid views
@@ -47,21 +45,29 @@ The main storefront is the primary app that runs when you execute `npm run dev` 
 - Checkout process
 - Success/confirmation page
 - Responsive design with warm cream palette
+- SEO-friendly server-side rendering
 
 ### Key Files
-- `src/App.tsx` - Main app with React Router
-- `src/pages/HomePage.tsx` - Landing page with featured products
-- `src/pages/ProductsPage.tsx` - Product listing
-- `src/pages/ProductDetailPage.tsx` - Single product view
-- `src/pages/CartPage.tsx` - Shopping cart
-- `src/components/Header.tsx` - Navigation header
-- `src/components/ProductCard.tsx` - Product display card
-- `src/context/CartContext.tsx` - Cart state management
-- `src/api/client.ts` - API client for backend
+- `storefront-app/server.js` - Express server with Liquid config
+- `storefront-app/theme/templates/index.liquid` - Homepage
+- `storefront-app/theme/templates/collection.liquid` - Products page
+- `storefront-app/theme/templates/product.liquid` - Product detail
+- `storefront-app/theme/templates/cart.liquid` - Shopping cart
+- `storefront-app/theme/snippets/header.liquid` - Navigation header
+- `storefront-app/theme/snippets/product-card.liquid` - Product card
+- `storefront-app/theme/assets/styles.css` - Source CSS (Tailwind)
+- `storefront-app/theme/assets/index.css` - Compiled CSS (auto-generated)
+- `storefront-app/theme/assets/cart.js` - Cart functionality
+
+### CSS Build System
+The storefront uses Tailwind CSS with a build step:
+- **Source**: `theme/assets/styles.css` - Edit this file, supports @tailwind, @apply
+- **Output**: `theme/assets/index.css` - Auto-compiled, DO NOT edit
+- **Build**: `npm run build:css` compiles styles.css → index.css
 
 ## Admin Dashboard (admin-app/)
 
-Separate React app for store administration.
+Server-side rendered admin dashboard using Express and Liquid.
 
 ### Features
 - Dashboard with key metrics
@@ -71,11 +77,9 @@ Separate React app for store administration.
 - Dark theme with responsive sidebar
 
 ### Key Files
-- `admin-app/src/App.tsx` - Admin app with routing
-- `admin-app/src/pages/DashboardPage.tsx` - Overview metrics
-- `admin-app/src/pages/ProductsPage.tsx` - Product management
-- `admin-app/src/pages/OrdersPage.tsx` - Order tracking
-- `admin-app/src/components/Sidebar.tsx` - Navigation sidebar
+- `admin-app/server.js` - Express server
+- `admin-app/theme/templates/` - Admin page templates
+- `admin-app/theme/snippets/` - Admin components
 
 ## API Worker (api-worker/)
 
@@ -95,24 +99,23 @@ Cloudflare Workers API built with Hono.
 
 ## Tech Stack
 
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS
-- **Routing**: React Router v7
-- **Icons**: Lucide React
+- **Storefront/Admin**: Node.js, Express, LiquidJS, Tailwind CSS
+- **Icons**: Lucide (via inline SVG)
 - **API**: Hono on Cloudflare Workers
 - **Database**: Cloudflare D1 (SQLite)
 
 ## Running Locally
 
 ```bash
-# Install dependencies
+# Install dependencies (also builds CSS)
 npm install
 
 # Start ALL services (storefront, admin, API) concurrently
 npm run dev
 
 # Or start services individually:
-npm run dev:storefront  # Storefront on port 5173
-npm run dev:admin       # Admin dashboard on port 5174
+npm run dev:storefront  # Storefront on port 3000
+npm run dev:admin       # Admin dashboard on port 3001
 npm run dev:api         # API worker on port 8787
 
 # Initialize database
@@ -122,19 +125,16 @@ npm run db:seed
 
 ## Ports
 
-- **Storefront**: Port 5173 (or PORT env var)
-- **Admin Dashboard**: Port 5174
+- **Storefront**: Port 3000 (or PORT env var)
+- **Admin Dashboard**: Port 3001
 - **Edge API**: Port 8787
 
 ## Environment Variables
 
-### Storefront
-- `VITE_API_URL` - API base URL (default: http://localhost:8787)
-- `VITE_STORE_SLUG` - Store identifier (default: demo-store)
-
-### Admin
-- `VITE_API_URL` - API base URL
-- `VITE_STORE_SLUG` - Store identifier
+### Storefront/Admin
+- `PORT` - Server port
+- `API_URL` - API base URL (default: http://localhost:8787)
+- `STORE_SLUG` - Store identifier (default: demo-store)
 
 ## Database Schema
 
@@ -148,13 +148,7 @@ Located in `infra/db/schema.sql`:
 ## DO NOT MODIFY
 
 The following files should not be modified:
-- package.json
-- vite.config.ts
-- tsconfig.json / tsconfig.app.json / tsconfig.node.json
-- tailwind.config.js / tailwind.config.cjs
-- postcss.config.cjs
-- eslint.config.js
-- admin-app/[config files]
-- api-worker/package.json
+- package.json (root and apps)
+- storefront-app/tailwind.config.js
 - api-worker/wrangler.toml
 - infra/db/schema.sql (structure)

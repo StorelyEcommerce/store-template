@@ -33,5 +33,6 @@
   "api-worker/package.json",
   "api-worker/wrangler.toml",
   "api-worker/tsconfig.json",
-  "infra/db/schema.sql"
+  "infra/db/schema.sql",
+  "storefront-app/theme/layouts/theme.liquid"
 ]
